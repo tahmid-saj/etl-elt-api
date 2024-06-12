@@ -48,10 +48,7 @@ func createBankingAccount(context *gin.Context) {
 	context.JSON(http.StatusCreated, gin.H{"message": "Banking account created", "bankingAccount": bankingAccount})
 }
 
-func deleteBankingAccount(context *gin.Context) {
-	userId := context.Param("userid")
-	email := context.Param("email")
-	
+func deleteBankingAccount(context *gin.Context) {	
 	var bankingAccount models.BankingAccount
 	err := context.ShouldBindJSON(&bankingAccount)
 
@@ -59,7 +56,7 @@ func deleteBankingAccount(context *gin.Context) {
 		context.JSON(http.StatusBadRequest, gin.H{"message": "Could not parse request data"})
 		return
 	}
-	bankingAccounts, err := models.GetBankingAccountsByUser(userId, email)
+	bankingAccounts, err := models.GetBankingAccountsByUser(bankingAccount.UserId, bankingAccount.Email)
 	if err != nil {
 		context.JSON(http.StatusInternalServerError, gin.H{"message": "Could not fetch banking accounts"})
 		return
@@ -80,22 +77,92 @@ func deleteBankingAccount(context *gin.Context) {
 }
 
 // banking accounts summary
-func getBankingAccountsSummary(context *gin.Context) {
+func getAllBankingSummary(context *gin.Context) {
+	bankingAccountsSummary, err := models.GetAllBankingSummary()
+	if err != nil {
+		context.JSON(http.StatusInternalServerError, gin.H{"message": "could not fetch banking accounts"})
+	}
 
+	context.JSON(http.StatusOK, bankingAccountsSummary)
 }
 
-func getBankingAccountSummary(context *gin.Context) {
+func getBankingSummaryByUser(context *gin.Context) {
+	userId := context.Param("userid")
+	email := context.Param("email")
 
+	bankingSummary, err := models.GetBankingSummaryByUser(userId, email)
+	if err != nil {
+		context.JSON(http.StatusInternalServerError, gin.H{"message": "Could not fetch banking summary"})
+		return
+	}
+
+	context.JSON(http.StatusOK, bankingSummary)
 }
 
-func createBankingAccountSummary(context *gin.Context) {
+func createBankingSummary(context *gin.Context) {
+	var bankingSummary models.BankingSummary
+	err := context.ShouldBindJSON(&bankingSummary)
 
+	if err != nil {
+		context.JSON(http.StatusBadRequest, gin.H{"message": "Could not parse request data"})
+		return
+	}
+
+	err = bankingSummary.SaveBankingSummary()
+	if err != nil {
+		context.JSON(http.StatusInternalServerError, gin.H{"message": "Could not create banking summary"})
+		return
+	}
+
+	context.JSON(http.StatusCreated, gin.H{"message": "Banking summary created", "bankingSummary": bankingSummary})
 }
 
-func updateBankingAccountSummary(context *gin.Context) {
+func updateBankingSummary(context *gin.Context) {
+	userId := context.Params.ByName("userid")
+	email := context.Params.ByName("email")
 
+	_, err := models.GetBankingSummaryByUser(userId, email)
+	if err != nil {
+		context.JSON(http.StatusInternalServerError, gin.H{"message": "Could not fetch banking summary"})
+		return
+	}
+
+	var bankingSummary models.BankingSummary
+	err = context.ShouldBindJSON(&bankingSummary)
+
+	if err != nil {
+		context.JSON(http.StatusBadRequest, gin.H{"message": "Could not parse request data"})
+		return
+	}
+
+	bankingSummary, err = bankingSummary.UpdateBankingSummary(userId, email)
+	if err != nil {
+		context.JSON(http.StatusInternalServerError, gin.H{"message": "Could not update banking summary"})
+		return
+	}
+
+	context.JSON(http.StatusOK, gin.H{"message": "Updated banking summary", "bankingSummary": bankingSummary})
 }
 
-func deleteBankingAccountSummary(context *gin.Context) {
+func deleteBankingSummary(context *gin.Context) {
+	var bankingSummary models.BankingSummary
+	err := context.ShouldBindJSON(&bankingSummary)
 
+	if err != nil {
+		context.JSON(http.StatusBadRequest, gin.H{"message": "Could not parse request data"})
+		return
+	}
+	bankingSummary, err = models.GetBankingSummaryByUser(bankingSummary.UserId, bankingSummary.Email)
+	if err != nil {
+		context.JSON(http.StatusInternalServerError, gin.H{"message": "Could not fetch banking summary"})
+		return
+	}
+
+	deletedBankingSummary, err := bankingSummary.DeleteBankingSummary()
+	if err != nil {
+		context.JSON(http.StatusInternalServerError, gin.H{"message": "Could not delete banking summary"})
+		return
+	}
+
+	context.JSON(http.StatusOK, gin.H{"message": "Banking summary successfully deleted", "bankingSummary": deletedBankingSummary})
 }

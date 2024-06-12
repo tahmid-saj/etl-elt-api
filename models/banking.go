@@ -4,7 +4,6 @@ import (
 	"context"
 	"os"
 	"tahmid-saj/etl-elt-api/db/mongodb"
-
 	"go.mongodb.org/mongo-driver/bson"
 )
 
@@ -32,6 +31,7 @@ type BankingSummary struct {
 	TotalAllBankingOut float64 `json:"totalAllBankingOut" bson:"totalAllBankingOut"`
 }
 
+// banking accounts
 func GetAllBankingAccounts() ([]BankingAccount, error) {
 	collection := db.MongoDBClient.Database(os.Getenv("MONGO_TEST_DB")).Collection(os.Getenv("MONGO_BANKING_ACCOUNTS_COLLECTION"))
 
@@ -56,8 +56,8 @@ func GetBankingAccountsByUser(userId string, email string) ([]BankingAccount, er
 	collection := db.MongoDBClient.Database(os.Getenv("MONGO_TEST_DB")).Collection(os.Getenv("MONGO_BANKING_ACCOUNTS_COLLECTION"))
 
 	filter := bson.D{
-		{"userId", userId}, 
-		{"email", email},
+		{Key: "userId", Value: userId}, 
+		{Key: "email", Value: email},
 	}
 
 	cursor, err := collection.Find(context.TODO(), filter)
@@ -93,13 +93,13 @@ func (bankingAccount *BankingAccount) SaveBankingAccount() error {
 	return nil
 }
 
-func (bankingAccount BankingAccount) DeleteBankingAccount() (BankingAccount, error) {
+func (bankingAccount *BankingAccount) DeleteBankingAccount() (BankingAccount, error) {
 	collection := db.MongoDBClient.Database(os.Getenv("MONGO_TEST_DB")).Collection(os.Getenv("MONGO_BANKING_ACCOUNTS_COLLECTION"))
 
 	filter := bson.D{
-		{"userId", bankingAccount.UserId}, 
-		{"email", bankingAccount.Email},
-		{"name", bankingAccount.Name},
+		{Key: "userId", Value: bankingAccount.UserId}, 
+		{Key: "email", Value: bankingAccount.Email},
+		{Key: "name", Value: bankingAccount.Name},
 	}
 
 	_, err := collection.DeleteOne(context.TODO(), filter)
@@ -107,5 +107,101 @@ func (bankingAccount BankingAccount) DeleteBankingAccount() (BankingAccount, err
 		panic(err)
 	}
 
-	return bankingAccount, nil
+	return *bankingAccount, nil
+}
+
+// banking summary
+func GetAllBankingSummary() ([]BankingSummary, error) {
+	collection := db.MongoDBClient.Database(os.Getenv("MONGO_TEST_DB")).Collection(os.Getenv("MONGO_BANKING_SUMMARY_COLLECTION"))
+
+	filter := bson.D{{}}
+
+	cursor, err := collection.Find(context.TODO(), filter)
+	if err != nil {
+		panic(err)
+	}
+
+	var bankingAccountsSummary []BankingSummary
+	if err = cursor.All(context.TODO(), &bankingAccountsSummary); err != nil {
+		panic(err)
+	}
+
+	return bankingAccountsSummary, nil
+}
+
+func GetBankingSummaryByUser(userId string, email string) (BankingSummary, error) {
+	collection := db.MongoDBClient.Database(os.Getenv("MONGO_TEST_DB")).Collection(os.Getenv("MONGO_BANKING_SUMMARY_COLLECTION"))
+
+	filter := bson.D{
+		{Key: "userId", Value: userId},
+		{Key: "email", Value: email},
+	}
+	
+	var bankingSummary BankingSummary
+	err := collection.FindOne(context.TODO(), filter).Decode(&bankingSummary)
+	if err != nil {
+		panic(err)
+	}
+
+	return bankingSummary, nil
+}
+
+func (bankingSummary *BankingSummary) SaveBankingSummary() error {
+	collection := db.MongoDBClient.Database(os.Getenv("MONGO_TEST_DB")).Collection(os.Getenv("MONGO_BANKING_SUMMARY_COLLECTION"))
+	newBankingSummary := BankingSummary{
+		UserId: bankingSummary.UserId,
+		Email: bankingSummary.Email,
+		CurrentAllBalance: 0.0,
+		TotalAllBankingIn: 0.0,
+		TotalAllBankingOut: 0.0,
+	}
+
+	_, err := collection.InsertOne(context.TODO(), newBankingSummary)
+	if err != nil {
+		panic(err)
+	}
+
+	return nil
+}
+
+func (bankingSummary *BankingSummary) UpdateBankingSummary(userId string, email string) (BankingSummary, error) {
+	collection := db.MongoDBClient.Database(os.Getenv("MONGO_TEST_DB")).Collection(os.Getenv("MONGO_BANKING_SUMMARY_COLLECTION"))
+
+	filter := bson.D{		
+		{Key: "userid", Value: userId},
+		{Key: "email", Value: email},
+	}
+
+	update := bson.D{
+		{Key: "$set", Value: bson.D{
+			{Key: "userid", Value: bankingSummary.UserId},
+			{Key: "email", Value: bankingSummary.Email},
+			{Key: "currentAllBalance", Value: bankingSummary.CurrentAllBalance},
+			{Key: "totalAllBankingIn", Value: bankingSummary.TotalAllBankingIn},
+			{Key: "totalAllBankingOut", Value: bankingSummary.TotalAllBankingOut},
+		},},
+	}
+
+	_, err := collection.UpdateOne(context.TODO(), filter, update)
+	if err != nil {
+		panic(err)
+	}
+
+	return *bankingSummary, nil
+}
+
+func (bankingSummary *BankingSummary) DeleteBankingSummary() (BankingSummary, error) {
+	collection := db.MongoDBClient.Database(os.Getenv("MONGO_TEST_DB")).Collection(os.Getenv("MONGO_BANKING_SUMMARY_COLLECTION"))
+
+	filter := bson.D{
+		{Key: "userId", Value: bankingSummary.UserId}, 
+		{Key: "email", Value: bankingSummary.Email},
+	}
+
+	_, err := collection.DeleteOne(context.TODO(), filter)
+	if err != nil {
+		panic(err)
+	}
+
+	return *bankingSummary, nil
 }
