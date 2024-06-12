@@ -19,7 +19,7 @@ func RegisterRoutes(server *gin.Engine) {
 	server.DELETE("/expenses/expenses-summary/:userid/:email")
 
 	// banking
-	server.GET("/banking/banking-accounts")
+	server.GET("/banking/banking-accounts", getBankingAccounts)
 	server.GET("/banking/banking-accounts/:userid/:email")
 	server.POST("/banking/banking-accounts")
 	server.PUT("/banking/banking-accounts/:userid/:email")

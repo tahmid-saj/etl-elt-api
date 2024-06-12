@@ -1,12 +1,20 @@
 package routes
 
 import (
+	"net/http"
 	"github.com/gin-gonic/gin"
+	"tahmid-saj/etl-elt-api/models"
 )
 
 // banking accounts
 func getBankingAccounts(context *gin.Context) {
+	bankingAccounts, err := models.GetAllBankingAccounts()
+	if err != nil {
+		context.JSON(http.StatusInternalServerError, gin.H{"message": "could not fetch banking accounts"})
+		return
+	}
 
+	context.JSON(http.StatusOK, bankingAccounts)
 }
 
 func getBankingAccount(context *gin.Context) {
