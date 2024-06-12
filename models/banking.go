@@ -55,7 +55,10 @@ func GetAllBankingAccounts() ([]BankingAccount, error) {
 func GetBankingAccountsByUser(userId string, email string) ([]BankingAccount, error) {
 	collection := db.MongoDBClient.Database(os.Getenv("MONGO_TEST_DB")).Collection(os.Getenv("MONGO_BANKING_ACCOUNTS_COLLECTION"))
 
-	filter := bson.D{{"userId", userId}, {"email", email}}
+	filter := bson.D{
+		{"userId", userId}, 
+		{"email", email},
+	}
 
 	cursor, err := collection.Find(context.TODO(), filter)
 	if err != nil {
@@ -70,12 +73,12 @@ func GetBankingAccountsByUser(userId string, email string) ([]BankingAccount, er
 	return bankingAccounts, nil
 }
 
-func (ba *BankingAccount) SaveBankingAccount() error {
+func (bankingAccount *BankingAccount) SaveBankingAccount() error {
 	collection := db.MongoDBClient.Database(os.Getenv("MONGO_TEST_DB")).Collection(os.Getenv("MONGO_BANKING_ACCOUNTS_COLLECTION"))
 	newBankingAccount := BankingAccount{
-		UserId: ba.UserId,
-		Email: ba.Email,
-		Name: ba.Name,
+		UserId: bankingAccount.UserId,
+		Email: bankingAccount.Email,
+		Name: bankingAccount.Name,
 		CurrentBalance: 0.0,
 		TotalIn: 0.0,
 		TotalOut: 0.0,
@@ -88,4 +91,21 @@ func (ba *BankingAccount) SaveBankingAccount() error {
 	}
 
 	return nil
+}
+
+func (bankingAccount BankingAccount) DeleteBankingAccount() (BankingAccount, error) {
+	collection := db.MongoDBClient.Database(os.Getenv("MONGO_TEST_DB")).Collection(os.Getenv("MONGO_BANKING_ACCOUNTS_COLLECTION"))
+
+	filter := bson.D{
+		{"userId", bankingAccount.UserId}, 
+		{"email", bankingAccount.Email},
+		{"name", bankingAccount.Name},
+	}
+
+	_, err := collection.DeleteOne(context.TODO(), filter)
+	if err != nil {
+		panic(err)
+	}
+
+	return bankingAccount, nil
 }
