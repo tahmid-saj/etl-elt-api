@@ -25,11 +25,11 @@ func RegisterRoutes(server *gin.Engine) {
 	// server.PUT("/banking/banking-accounts/:userid/:email")
 	server.DELETE("/banking/banking-accounts", deleteBankingAccount)
 
-	server.GET("/banking/banking-summary")
-	server.GET("/banking/banking-summary/:userid/:email")
-	server.POST("/banking/banking-summary")
-	server.PUT("/banking/banking-summary/:userid/:email")
-	server.DELETE("/banking/banking-summary")
+	server.GET("/banking/banking-summary", getAllBankingSummary)
+	server.GET("/banking/banking-summary/:userid/:email", getBankingSummaryByUser)
+	server.POST("/banking/banking-summary", createBankingSummary)
+	server.PUT("/banking/banking-summary/:userid/:email", updateBankingSummary)
+	server.DELETE("/banking/banking-summary", deleteBankingSummary)
 
 	// investments
 	server.GET("/investments/investments")
