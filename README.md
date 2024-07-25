@@ -23,4 +23,4 @@ Figure 1: High level view of the ETL ELT API and usage in other applications
 1. __MongoDB__
 2. __Redis__
 3. __AWS RDS__
-4. __MySQL__
+4. __SQL__
