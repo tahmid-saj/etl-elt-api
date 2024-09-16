@@ -8,9 +8,9 @@ func RegisterRoutes(server *gin.Engine) {
 	// expenses
 	server.GET("/expenses/expenses")
 	server.GET("/expenses/expenses/:userid/:email")
-	server.POST("/expenses/expenses")
-	server.PUT("/expenses/expenses/:userid/:email")
-	server.DELETE("/expenses/expenses")
+	server.POST("/expenses/expense")
+	server.PUT("/expenses/expense/:userid/:email")
+	server.DELETE("/expenses/expense")
 
 	server.GET("/expenses/expenses-summary")
 	server.GET("/expenses/expenses-summary/:userid/:email")
