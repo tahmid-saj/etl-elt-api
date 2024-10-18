@@ -1,16 +1,34 @@
-# ETL ELT API
-<br>
+# data-ingestion-api
 
 API providing direct access and ETL / ELT data migration capabilities on various databases from MongoDB, Redis, SQL, AWS RDS, Firebase Firestore etc. Developed with Go and external databases.
-<br>
-<br>
+
+<br/>
+<br/>
+
+## Directory structure
+
+The directory structure is as follows:
+
+<br/>
+<br/>
+
+## Overview
+
+### Design
 
 <figure>
-  <img width="944" alt="image" src="https://github.com/user-attachments/assets/80cf4ed7-58f7-4576-a3cd-d63ef584e0fd">
+  <img width="1000" alt="image" src="https://github.com/user-attachments/assets/80cf4ed7-58f7-4576-a3cd-d63ef584e0fd">
 </figure>
-Figure 1: High level view of the ETL ELT API and usage in other applications
-<br>
-<br>
+Figure 1: High level view of the API and usage in other applications
+
+<br/>
+<br/>
+
+Similar services can be found <a href="https://whimsical.com/web-microservices-6uqvwWZtcBFsNJB2hepGy1">here</a> and below:
+
+#### Similar services
+
+<img width="834" alt="image" src="https://github.com/user-attachments/assets/b54088e7-870c-46dd-9cf6-2e5ec27d9d5c">
 
 ### The ETL ELT API provides manual data migration for the following applications:
 
