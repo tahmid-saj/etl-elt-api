@@ -9,6 +9,26 @@ API providing direct access and ETL / ELT data migration capabilities on various
 
 The directory structure is as follows:
 
+etl-elt-api/
+├── **db/**  
+│   - Contains database connection files and schemas.
+├── **models/**  
+│   - Defines data models used for the API.
+├── **routes/**  
+│   - Contains the API route definitions for handling requests.
+├── **utils/**  
+│   - Utility functions and helpers for the application.
+├── **.gitignore**  
+│   - Specifies files and directories to be ignored by Git.
+├── **README.md**  
+│   - Documentation file providing an overview of the project.
+├── **go.mod**  
+│   - Defines the module’s dependencies.
+├── **go.sum**  
+│   - Contains checksums for module dependencies.
+└── **main.go**  
+    - The main entry point of the application, launching the API.
+
 <br/>
 <br/>
 
